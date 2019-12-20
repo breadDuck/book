@@ -1,0 +1,25 @@
+<nav class="navbar navbar-inverse navbar-fixed-top">
+  <div class="container-fluid">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="#"><span class="glyphicon glyphicon-book text-info"></span>BB书城后台管理</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li><a href="{{:url('admin/index/index')}}">用户面板</a></li>
+        <li><a href="#" data-toggle="dropdown">设置<span class="caret"></span></a>
+          <ul class="dropdown-menu">
+              <li><a href="{{:url('admin/user/editName')}}">修改用户名</a></li>
+              <li><a href="{{:url('admin/user/editPass')}}">修改密码</a></li>
+          </ul>
+        </li>
+        <li><a href="{{:url('index/index/index')}}">回到首页</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>

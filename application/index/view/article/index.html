@@ -1,0 +1,315 @@
+{{extend name="public/base"}}
+{{block name="css"}}
+<style>
+    .thumb-up {
+        font-size: 1.5rem;
+        margin-left: 5%;
+    }
+
+    .thumb-up:hover {
+        color: red;
+    }
+</style>
+{{/block}}
+{{block name="content"}}
+<div class="row">
+    <div class="col-md-9 col-sm-8 text-center" style="margin-top: 20px;">
+        <div class="row media"
+            style="margin:20px 0; border: 1px solid skyblue; border-radius: 10px; position: relative;">
+            <div class="col-sm-6">
+                <img class="img-responsive img-thumbnail"
+                    src="{{if condition='$book.is_upload'}}__ROOT__/static/upload/{{/if}}{{$book.pic}}"
+                    alt="{{$book.title}}" style="width: 100%;height: auto; min-height: 200px; max-height: 450px;">
+            </div>
+            <div class="col-sm-6" style="min-height: 200px; max-height: 450px; overflow: hidden;">
+                <h2>{{$book.title}}</h2>
+                <h5 class="help-block">更新时间：<span class="text-info">{{$book.updated_at}}</span>
+                    上传者：<span class="text-info">{{$book->author->name}}</span>
+                    &nbsp;&nbsp;
+                    <span class="glyphicon glyphicon-eye-open text-danger">{{$book.browse_times}}</span>
+                    <span class="glyphicon glyphicon-comment text-primary">{{$book.comment_times}}</span>
+                </h5>
+                <div class="text-left">
+                    {{$book.intro|nl2br}}
+                </div>
+            </div>
+            <p style="position: absolute; bottom: 5px; right: 40px; opacity: 0.7;">
+                {{if condition="$bought"}}
+                <a href="{{:url('index/pages/index',['key'=>$book.book_key,'id'=>$book.id])}}" class="btn btn-danger btn-lg">立即阅读</a>
+                {{else /}}
+                <a href="#" class="btn btn-danger btn-lg" id="buy"
+                    data-href="{{:url('index/pages/index',['key'=>$book.book_key,'id'=>$book.id])}}" data-money="{{$book.money}}"
+                    admin-id="{{$book.admin_id}}">立即购买(￥{{$book.money}})</a>
+                {{/if}}
+                {{if condition="$collected"}}
+                <a href="#" class="btn btn-info btn-lg" id="collect" data-bookId={{$book.id}}>取消收藏</a>
+                {{else /}}
+                <a href="#" class="btn btn-info btn-lg" id="collect" data-bookId={{$book.id}}>加入收藏</a>
+                {{/if}}
+            </p>
+        </div>
+        {{if condition="session('?bookuser')"}}
+        <div class="panel panel-default text-left" id="comment">
+            <div class="panel-heading">
+                <span class="glyphicon glyphicon-comment" />我对此书的看法：
+                <input type="radio" value="good" name="view" id="good" style="width: 16px;height: 16px;">非常棒
+                <input type="radio" value="common" name="view" id="common" style="width: 16px;height: 16px;">一般般
+                <input type="radio" value="bad" name="view" id="bad" style="width: 16px;height: 16px;">很垃圾
+            </div>
+            <div class="panel-body">
+                <textarea name="" id="content" rows="5" placeholder="我有话说"
+                    style="width: 100%; resize: none;"></textarea>
+            </div>
+            <div class="panel-footer">
+                <button class="btn btn-success" id="publish">发表评论</button>
+            </div>
+        </div>
+        {{else /}}
+        <div class="panel panel-default text-left">
+            <div class="panel-heading">
+                <p><span class="glyphicon glyphicon-comment" />我也要评论</p>
+            </div>
+            <div class="panel-body">
+                <p class="text-center">您尚未登录，请先 <a href="{{:url('index/user/login')}}" class="text-danger">登录</a></p>
+            </div>
+        </div>
+        {{/if}}
+        <div id="comment-area" data-total="{{$book.comment_times}}">
+
+        </div>
+        <ul class="pagination pagination-lg" id="page-bar" style="display: none;">
+        </ul>
+    </div>
+    <div class="col-md-3 col-sm-4">
+        <div class="page-header">
+            <h2>最火</h2>
+        </div>
+        <div class="list-group">
+            {{volist name="hotList" id="vo" length="5" empty="暂时无数据"}}
+            <div class="list-group-item {{if condition='$key==0'}}list-group-item-danger{{/if}}">
+                <a href="{{:url('index/article/index',['id'=>$vo.id])}}">{{$vo.title}}</a><span
+                    class="badge">{{$vo.browse_times}}</span></div>
+            {{/volist}}
+        </div>
+        <div class="page-header">
+            <h2>最新</h2>
+        </div>
+        <div class="list-group">
+            {{volist name="newList" id="vo" length="5" empty="暂时无数据"}}
+            <div class="list-group-item {{if condition='$key==0'}}list-group-item-danger{{/if}}">
+                <a href="{{:url('index/article/index',['id'=>$vo.id])}}">{{$vo.title}}</a></div>
+            {{/volist}}
+        </div>
+    </div>
+</div>
+
+{{/block}}
+
+{{block name="js"}}
+<script>
+    //显示评论和分页导航条
+    let total = $('#comment-area').attr('data-total');
+    show(0, 5);
+    showPageBar(total);
+
+    //渲染分页导航条的方法
+    function showPageBar(total) {
+        $('#page-bar').html('');
+        let pageNum = Math.ceil(total / 5);
+        if (pageNum > 1) {
+            $('#page-bar').css('display', 'block');
+            for (let i = 1; i <= pageNum; i++) {
+                if (i == 1) {
+                    $('#page-bar').append('<li class="active" data-val="1"><a>1</a></li>')
+                } else {
+                    $('#page-bar').append(`<li data-val="${i}"><a>${i}</a></li>`)
+                }
+            }
+        }
+        //导航条按钮监听
+        $('#page-bar>li').click(function () {
+            let start = ($(this).attr('data-val') - 1) * 5;
+            show(start, 5);
+            $('#page-bar>li').removeClass();
+            $(this).addClass('active');
+
+        })
+    }
+
+    //收藏按钮ajax部分
+    $('#collect').click(function () {
+        let book_id = $(this).attr('data-bookId');
+        if ($(this).text() == '加入收藏') {
+            $.post("{{:url('index/article/collect')}}", {
+                    'book_id': book_id
+                },
+                function (data, textStatus, jqXHR) {
+                    data = JSON.parse(data);
+                    if (data.re) {
+                        alert('已收藏');
+                        $('#collect').text('取消收藏');
+                    } else {
+                        let res = confirm('您尚未登录，请先登录!');
+                        if (res) {
+                            location.href = "{{:url('index/user/login')}}";
+                        }
+                    }
+                },
+                "json"
+            );
+        } else {
+            $.post("{{:url('index/article/cancel')}}", {
+                    'book_id': book_id
+                },
+                function (data, textStatus, jqXHR) {
+                    data = JSON.parse(data);
+                    if (data.re) {
+                        alert('已取消收藏');
+                        $('#collect').text('加入收藏');
+                    } else {
+                        alert('操作失败');
+                    }
+                },
+                "json"
+            );
+        }
+    });
+    //购买按钮ajax部分
+    $('#buy').click(function () {
+        if ($(this).text() == '立即阅读') {
+            return;
+        }
+        let book_id = $('#collect').attr('data-bookId');
+        let admin_id = $('#buy').attr('admin-id');
+        let money = $('#buy').attr('data-money');
+        $.post("{{:url('index/article/buy')}}", {
+                'book_id': book_id,
+                'money': money,
+                'admin_id': admin_id
+            },
+            function (data, textStatus, jqXHR) {
+                if (data.re) {
+                    console.log(data);
+                    alert('购买成功！');
+                    $('#buy').text('立即阅读');
+                    $('#buy').attr('href', $('#buy').attr('data-href'));
+                } else {
+                    if (data.info == '您尚未登录，请先登录') {
+                        let res = confirm(data.info);
+                        if (res) {
+                            location.href = "{{:url('index/user/login')}}";
+                        }
+                    } else {
+                        alert(data.info);
+                    }
+                }
+            },
+            "json"
+        );
+    });
+    //发表评论ajax部分
+    let view = false;
+    $('#good').change(function () {
+        if ($(this).is(':checked')) {
+            view = 'good';
+            $('#comment').removeClass().addClass('panel panel-danger text-left');
+        }
+    })
+    $('#common').change(function () {
+        if ($(this).is(':checked')) {
+            view = 'common';
+            $('#comment').removeClass().addClass('panel panel-warning text-left');
+        }
+    })
+    $('#bad').change(function () {
+        if ($(this).is(':checked')) {
+            view = 'bad';
+            $('#comment').removeClass().addClass('panel panel-info text-left');
+        }
+    })
+    $('#publish').click(() => {
+        if (!view) {
+            alert('请选择您的看法');
+            return;
+        }
+        $.post("{{:url('index/comment/publish',['book_id'=>$book.id])}}", {
+                "view": view,
+                "content": $('#content').val()
+            },
+            function (data, textStatus, jqXHR) {
+                if (data) {
+                    total++;
+                    showPageBar(total);
+                    show(0, 5);
+                    alert('发表成功');
+                } else {
+                    alert('操作失败');
+                }
+            },
+            "json"
+        );
+    })
+
+    //渲染评论的方法
+    function show(start, num) {
+        //先清空所有内容
+        $('#comment-area').html('');
+        //ajax获取评论信息
+        $.post("{{:url('index/comment/show',['book_id'=>$book.id])}}", {
+                'start': start,
+                'num': num
+            },
+            function (data, textStatus, jqXHR) {
+                data = JSON.parse(data);
+                // console.log(data);
+                let viewClass = '';
+
+                $.each(data, (k, v) => {
+                        switch (v.view) {
+                            case '非常棒':
+                                viewClass = 'panel panel-danger text-left';
+                                break;
+                            case '一般般':
+                                viewClass = 'panel panel-warning text-left';
+                                break;
+                            case '垃圾':
+                                viewClass = 'panel panel-info text-left';
+                                break;
+                            default:
+                                break;
+                        }
+                        $('#comment-area').append(`<div class="${viewClass}">
+                    <div class="abc panel-heading">${v.view}</div>
+                    <div class="panel-body">${v.content}</div>
+                    <div class="panel-footer">${v.admin_id} 发表于：${v.created_at}
+                    <span class="glyphicon glyphicon-thumbs-up thumb-up" data-id=${v.id}>${v.favor_times}</span></div>
+                    </div>`)
+                    },
+                    "json"
+                );
+                setFavorBtn();
+            });
+    }
+
+    //点赞监听方法
+    function setFavorBtn() {
+        $('.thumb-up').click(function () {
+            let id = $(this).attr('data-id');
+            $.post("{{:url('index/comment/favor')}}", {
+                    "id": id
+                },
+                function (data, textStatus, jqXHR) {
+                    data = JSON.parse(data);
+                    if (data.re) {
+                        let num = parseInt($(`[data-id=${id}]`).text()) + 1;
+                        $(`[data-id=${id}]`).text(num);
+                    } else {
+                        alert(data.info);
+                    }
+                },
+                "json"
+            );
+        })
+    }
+</script>
+{{/block}}

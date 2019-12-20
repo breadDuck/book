@@ -1,0 +1,13 @@
+{{extend name="public/base"}}
+
+{{block name="content"}}
+<h2>请选择书目：</h2>
+<hr>
+{{volist name="list" id="vo" empty="<h3 class='text-center'>您没有上传的书目</h3>"}}
+<p>
+    <a href="{{:url('admin/pages/create',['id'=>$vo.id])}}">{{$vo.title}}</a>
+    <span>最后一次更新：{{$vo['last_title']??'无'}}</span>
+</p>
+<hr>
+{{/volist}}
+{{/block}}

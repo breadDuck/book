@@ -1,0 +1,26 @@
+{{extend name="public/base"}}
+
+{{block name="content"}}
+
+<div class="table-responsive">
+    <h2>分类列表</h2>
+    <table class="table table-bordered table-hover">
+        <tr>
+            <th>id</td>
+            <th>title</td>
+            <td>edit</td>
+        </tr>
+        {{volist name="categoryList" id="vo"}}
+        <tr>
+            <td>{{$vo.id}}</td>
+            <td>{{$vo.title}}</td>
+            <td>
+                <a href="{{:url('admin/category/edit',['id'=>$vo.id])}}" class="btn btn-primary">编辑</a>
+                <a href="{{:url('admin/category/delete',['id'=>$vo.id])}}" class="btn btn-danger"
+                    onclick="return confirm('are you sure?')">删除</a>
+            </td>
+        </tr>
+        {{/volist}}
+    </table>
+</div>
+{{/block}}

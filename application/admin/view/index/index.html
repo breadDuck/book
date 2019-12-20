@@ -1,0 +1,85 @@
+{{extend name="public/base"}}
+
+{{block name="content"}}
+<h2>用户名：{{$user.name}}</h2>
+<h2>用户等级：{{$user.user_rank}}</h2>
+<h2>邮箱：{{$user.email}}</h2>
+<h2 id="money" data-money={{$user.money}}>金币：{{$user.money}}</h2>
+<h2>我的收藏：</h2>
+<div class="row" style="margin-top:20px">
+    {{volist name="collectList" id="vo" empty="<h3 class='text-center'>没有收藏</h3>"}}
+    <div class="col-md-3 col-sm-4 col-xs-6">
+        <div class="thumbnail" style="background-color:#ccc;">
+            <a href="{{:url('index/article/index',['id'=>$vo->detail->id])}}">
+                {{if condition="$vo->detail->getData('is_upload')"}}
+                <img src="__ROOT__/static/upload/{{$vo->detail->pic}}" style="width: 100%;height: 150px;">
+                {{else /}}
+                <img src="{{$vo->detail->pic}}" style="width: 100%;height: 150px;">
+                {{/if}}
+            </a>
+            <div class="caption" style="width: 100%;height: 80px;">
+                <h4 class="text-center"><a
+                        href="{{:url('index/article/index',['id'=>$vo->detail->id])}}">{{$vo->detail->title}}</a></h4>
+                <div class="row">
+                        {{if condition="$vo.bought"}}
+                        <a href="{{:url('index/pages/index',['key'=>$vo->detail->book_key,'id'=>$vo->detail->id])}}" class="btn btn-sm btn-danger col-xs-offset-2 col-xs-4">立即阅读</a>
+                        {{else /}}
+                        <form action="{{:url('index/article/adminBuy',['book_id'=>$vo.detail.id])}}"
+                            style="display: inline-block;" class="col-xs-offset-1 col-xs-6">
+                            <input type="hidden" value="{{$vo.detail.money}}" name="money">
+                            <input type="hidden" value="{{$vo.detail.admin_id}}" name="admin_id">
+                            <input class="btn btn-sm btn-danger" type="submit" onclick="return buy({{$vo.detail.money}})" value="立即购买(￥{{$vo.detail.money}})"/>
+                        </form>
+                        {{/if}}
+                        <a href="{{:url('index/article/adminCancel',['book_id'=>$vo->detail->id])}}"
+                            class="btn btn-sm btn-primary col-xs-4">取消收藏</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {{/volist}}
+    <div class="col-xs-offset-3 col-xs-6">
+        {{$collectList->render()}}
+    </div>
+</div>
+<h2>已购买：</h2>
+<div class="row" style="margin-top:20px">
+    {{volist name="boughtList" id="vo" empty="<h3 class='text-center'>没有购买</h3>"}}
+    <div class="col-md-3 col-sm-4 col-xs-6">
+        <div class="thumbnail" style="background-color: cornsilk;">
+            <a href="{{:url('index/article/index',['id'=>$vo->detail->id])}}">
+                {{if condition="$vo->detail->getData('is_upload')"}}
+                <img src="__ROOT__/static/upload/{{$vo->detail->pic}}" style="width: 100%;height: 150px;">
+                {{else /}}
+                <img src="{{$vo->detail->pic}}" style="width: 100%;height: 150px;">
+                {{/if}}
+            </a>
+            <div class="caption" style="width: 100%;height: 80px;">
+                <h4 class="text-center"><a
+                        href="{{:url('index/article/index',['id'=>$vo->detail->id])}}">{{$vo->detail->title}}</a></h4>
+                <p class="text-center">
+                    <a href="{{:url('index/pages/index',['key'=>$vo->detail->book_key,'id'=>$vo->detail->id])}}" class="btn btn-sm btn-danger">立即阅读</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    {{/volist}}
+</div>
+{{/block}}
+
+{{block name="js"}}
+<script>
+    function buy(price) {
+        if (confirm('您确定要购买此书？')) {
+            if ($('#money').attr('data-money') >= price) {
+                return true;
+            } else {
+                alert('余额不足！');
+                return false;
+            }
+        } else {
+            return false;
+        }
+    }
+</script>
+{{/block}}

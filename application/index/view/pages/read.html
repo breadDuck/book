@@ -1,0 +1,69 @@
+{{extend name="public/base"}}
+
+{{block name="content"}}
+<h3>当前书目：{{$book.title}}</h3>
+<a href="{{:url('index/pages/index',['id'=>$page.book_id,'key'=>$book['book_key']])}}">
+    <h3>返回章节列表</h3>
+</a>
+<h1 class="text-center">{{$page.title}}</h1>
+<hr>
+<div>
+    {{$page.content|nl2br}}
+</div>
+<h3 class="text-center">
+    <a href="{{:url('index/pages/lastPage',['id'=>$page.id,'book_id'=>$book.id])}}">上一章</a>
+    <span> || </span>
+    <a href="{{:url('index/pages/nextPage',['id'=>$page.id,'book_id'=>$book.id])}}">下一章</a>
+</h3>
+
+<div id="top-btn"
+    style="position: fixed; right:2vw;bottom:20vh;font-size: 2vw;border-radius: 50%;border: 2px solid black;opacity: 0.6;">
+    回到顶部
+</div>
+{{/block}}
+
+{{block name="js"}}
+<script>
+    //返回顶部的按钮
+    var begin = 0,
+        timer = null;
+    $('#top-btn').hover(() => {
+        $('#top-btn').css("color", "red")
+    }).mouseout(() => {
+        $('#top-btn').css("color", "black")
+    }).hide();
+    window.onscroll = function () {
+        begin = scroll().top;
+        begin > 20 ? $('#top-btn').show() : $('#top-btn').hide();
+    }
+    $('#top-btn').click(function () {
+        clearInterval(timer);
+        timer = setInterval(function () {
+            begin = begin * 0.5;
+            window.scrollTo(0, begin);
+            if (Math.round(begin == 0)) {
+                clearInterval(timer);
+            }
+        }, 50)
+    })
+    //自定义获取滚动的头部和左部距离的方法
+    function scroll() {
+        if (window.pageYOffset !== null) {
+            return {
+                top: window.pageYOffset,
+                left: window.pageXOffset
+            }
+        } else if (document.compatMode === "CSS1Compat") { // W3C
+            return {
+                top: document.documentElement.scrollTop,
+                left: document.documentElement.scrollLeft
+            }
+        }
+        return {
+            top: document.body.scrollTop,
+            left: document.body.scrollLeft
+        }
+    }
+</script>
+
+{{/block}}

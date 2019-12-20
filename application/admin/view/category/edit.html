@@ -1,0 +1,26 @@
+{{extend name="public/base"}}
+
+{{block name="content"}}
+
+<div class="table-responsive">
+    <h2>修改分类</h2>
+    <form action="{{:url('admin/category/doEdit',['id'=>$category->id])}}" method="GET">
+        <table class="table table-bordered table-hover">
+            <tr>
+                <th>id</td>
+                <th>title</td>
+                <th>operate</th>
+            </tr>
+            <tr>
+                <td>{{$category->id}}</td>
+                <td><input type="text" name="title" value="{{$category->title}}"></td>
+                <td>
+                    <input type="hidden" name="id" value="{{$category->id}}">
+                    <input type="submit" value="修改" class="btn btn-primary">
+                    <input type="reset" value="取消" class="btn btn-default">
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+{{/block}}

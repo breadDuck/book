@@ -1,0 +1,98 @@
+{{extend name="public/base"}}
+
+{{block name="content"}}
+
+<p>
+    <h2 style="display: inline-block;">{{if condition="$Request.action=='selflist'"}}个人{{/if}}书目列表</h2>
+    <a href="{{:url('admin/article/selfList')}}" class="btn btn-info btn-sm">查看我发表的</a>
+    <form method="GET" class="form-inline" {{if condition="$Request.action=='selflist'"}}style="display:none" {{/if}}>
+        <div class="form-group">
+            <input type="date" id="date" name="origin-date" class="form-control"
+                value="{{:input('param.origin-date')}}">
+            <input type="hidden" name="date" id="timestamp">
+        </div>
+        <div class="form-group">
+            <input type="text" name="title" class="form-control" value="{{:input('param.title')}}" placeholder="title">
+        </div>
+        <div class="form-group">
+            <input type="number" name="id" class="form-control" value="{{:input('param.id')}}" placeholder="id">
+        </div>
+        <div class="form-group">
+            <select name="is_upload" class="form-control">
+                <option value="">图片上传方式</option>
+                <option value="1" {{if condition="input('param.is_upload')==='1'"}}selected{{/if}}>文件</option>
+                <option value="0" {{if condition="input('param.is_upload')==='0'"}}selected{{/if}}>URL</option>
+            </select>
+        </div>
+        <div class="form-group">
+            <select name="category_id" class="form-control">
+                <option value="">category</option>
+                {{volist name="categoryList" id="vo"}}
+                <option value="{{$vo.id}}" {{if condition="input('param.category_id')===(string)$vo.id"}}selected{{/if}}>
+                    {{$vo.title}}</option>
+                {{/volist}}
+            </select>
+        </div>
+
+        <input type="submit" value="search" onclick="searchSubmit()" class="btn btn-success">
+    </form>
+</p>
+<table class="table table-bordered table-hover table-condensed">
+    <tr>
+        <th style="padding-right: 10px;">id</td>
+        <th style="padding-right: 40px;">title</td>
+        <th style="padding-right: 40px;">intro</td>
+        <th>pic</th>
+        <th>upload</th>
+        <th>key</th>
+        <th>category</th>
+        <th>admin</th>
+        <th>browse_times</th>
+        <th>comment_times</th>
+        <th>created_at</th>
+        <th>updated_at</th>
+        <th style="padding-right: 100px;">edit</th>
+    </tr>
+    {{volist name="bookList" id="vo" empty="<h2 class='text-danger text-center'> 没有数据</h2>"}}
+    <tr>
+        <td>{{$vo:id}}</td>
+        <td><span class="text-danger">{{$vo:title}}</span></td>
+        <td>{{$vo:intro|mb_substr=0,15}}..</td>
+        <td>{{$vo:pic|mb_substr=0,16}}..</td>
+        <td>{{$vo:is_upload}}</td>
+        <td>{{$vo:book_key|mb_substr=0,16}}..</td>
+        <td>{{$vo->category->title??'null'}}</td>
+        <td><span class="text-warning">{{$vo->author->name??'null'}}</span></td>
+        <td>{{$vo->browse_times}}</td>
+        <td>{{$vo.comment_times}}</td>
+        <td>{{$vo.created_at}}</td>
+        <td>{{$vo.updated_at}}</td>
+        <td>
+            {{if condition="session('bookuser')->user_rank>1||session('bookuser')->id==$vo->admin_id"}}
+            <a href="{{:url('admin/article/edit',['id'=>$vo.id])}}" class="btn btn-primary">编辑</a>
+            <a href="{{:url('admin/article/delete',['id'=>$vo.id])}}" class="btn btn-danger"
+                onclick="return confirm('确认删除《{{$vo:title}}》?')">删除</a>
+            {{else /}}
+            <a href="{{:url('index/article/index',['id'=>$vo.id])}}" class="btn btn-info">查看</a>
+            {{/if}}
+        </td>
+    </tr>
+    {{/volist}}
+</table>
+{{$bookList->render()}}
+
+{{/block}}
+
+{{block name="js"}}
+<script>
+    function searchSubmit() { //把date输入框里的string格式数据转换为时间戳，并通过隐藏的输入框传输
+        let str = $('#date').val();
+        if (str) {
+            str = str.replace(/-/g, '/');
+            let time = new Date(str);
+            time = time.getTime() / 1000;
+            $('#timestamp').val(time);
+        }
+    }
+</script>
+{{/block}}

@@ -1,0 +1,45 @@
+<div class="navbar navbar-inverse navbar-fixed-top">
+    <div class="navbar-header">
+        <button data-toggle="collapse" data-target="#navbar-menu" class="navbar-toggle collapsed">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+        </button>
+        <!-- 专门放网站Logo,不会隐藏 -->
+        <a href="{{:url('index/index/index')}}" class="navbar-brand"><span
+                class="glyphicon glyphicon-book text-info"></span>BB书城</a>
+    </div>
+    <div class="collapse navbar-collapse" id="navbar-menu">
+        <!-- 内容 -->
+        <ul class="nav navbar-nav">
+            <li><a href="{{:url('admin/article/add')}}">上传新书</a></li>
+            <li>
+                <a href="#" data-toggle="dropdown">选择类型<span class="caret"></span></a>
+                <ul class="dropdown-menu">
+                    {{volist name="categoryList" id="vo"}}
+                    <li><a href="{{:url('index/article/list',['id'=>$vo.id])}}">{{$vo.title}}</a></li>
+                    {{/volist}}
+                </ul>
+            </li>
+        </ul>
+        <!-- 右边的用户登陆注册部分 -->
+        <ul class="nav navbar-nav navbar-right" style="margin-right: 20px;">
+            <li>
+                <a data-toggle="dropdown">
+                    {{if condition="session('?bookuser')"}}{{:session('bookuser')['name']}}{{/if}}&nbsp;<span class="glyphicon glyphicon-user"></span><span class="caret"></span>
+                </a>
+                <ul class="dropdown-menu">
+                    {{if condition="!session('?bookuser')"}}
+                    <li><a href="{{:url('index/user/login')}}">登录</a></li>
+                    <li><a href="{{:url('index/user/register')}}">注册</a></li>
+                    {{else /}}
+                    <li><a href="{{:url('admin/index/index')}}">{{$Think.session.bookuser.name}}</a></li>
+                    <li><a href="{{:url('index/message/index')}}">消息{{if condition="session('new')==1"}}<span class="text-danger">NEW</span>{{/if}}</a></li>
+                    <li><a href="{{:url('index/user/logout')}}">退出</a></li>
+                    {{/if}}
+                </ul>
+            </li>
+        </ul>
+    </div>
+</div>
+<div style="width: 100%;height: 60px;"></div>

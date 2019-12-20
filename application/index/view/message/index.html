@@ -1,0 +1,15 @@
+{{extend name="public/base"}}
+{{block name="content"}}
+
+{{volist name="message" id="vo" empty="<h1 class='text-center'>暂无消息</h1>"}}
+<div class="panel {{if condition='$vo.have_read==1'}}panel-default{{else /}}panel-info{{/if}}">
+    <div class="panel panel-heading">
+        <h1 class="panel-title">{{$vo.create_time}}</h1>
+    </div>
+    <div class="panel-body">
+        <h3>{{$vo->creator->name}}购买了您的书《{{$vo->book->title}}》</h3>
+    </div>
+</div>
+{{/volist}}
+
+{{/block}}

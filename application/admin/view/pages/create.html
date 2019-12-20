@@ -1,0 +1,22 @@
+{{extend name="public/base"}}
+
+{{block name="content"}}
+<h2>当前书目：{{$book.title}}</h2>
+<form action="{{:url('admin/pages/save')}}" class="form-horizontal" method="POST">
+    本章标题: <br>
+    <input type="text" name="title" class="form-control" style="max-width: 60vw;"><br>
+    本章内容:
+    <textarea id="ueditor" name="content"></textarea>
+    <input type="hidden" name="book_id" value="{{$book.id}}">
+    <button type="submit" class="btn btn-primary">提交</button>
+    <button type="reset" class="btn btn-default">清空</button>
+</form>
+{{/block}}
+
+{{block name="js"}}
+<script src="__STATIC__/ueditor/ueditor.config.js"></script>
+<script src="__STATIC__/ueditor/ueditor.all.js"></script>
+<script>
+    let ue = UE.getEditor('ueditor');
+</script>
+{{/block}}

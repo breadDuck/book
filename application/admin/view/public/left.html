@@ -1,0 +1,69 @@
+<div class="panel-group" id="pg">
+    {{if condition="session('bookuser')->user_rank>1"}}
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <a href="#user" data-toggle="collapse" data-parent="#pg">
+                用户管理
+            </a>
+        </div>
+        <div id="user" class="collapse {{if condition='$Request.controller=="User"&&in_array($Request.action,["add","list"])'}}in{{/if}}">
+            <ul class="list-group" style="margin: 0;">
+                <li class="list-group-item"><a href="{{:url('admin/user/list')}}">用户列表</a></li>
+                <li class="list-group-item"><a href="{{:url('admin/user/add')}}">添加用户</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <a href="#category" data-toggle="collapse" data-parent="#pg">
+                分类管理
+            </a>
+        </div>
+        <div id="category" class="collapse {{if condition='$Request.controller=="Category"'}}in{{/if}}">
+            <ul class="list-group" style="margin: 0;">
+                <li class="list-group-item"><a href="{{:url('admin/category/list')}}">分类列表</a></li>
+                <li class="list-group-item"><a href="{{:url('admin/category/add')}}">添加分类</a></li>
+            </ul>
+        </div>
+    </div>
+    {{/if}}
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <a href="#article" data-toggle="collapse" data-parent="#pg">
+                书籍管理
+            </a>
+        </div>
+        <div id="article" class="collapse {{if condition='$Request.controller=="Article"'}}in{{/if}}">
+            <ul class="list-group" style="margin: 0;">
+                <li class="list-group-item"><a href="{{:url('admin/article/list')}}">书籍列表</a></li>
+                <li class="list-group-item"><a href="{{:url('admin/article/add')}}">发表新书</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <a href="#page" data-toggle="collapse" data-parent="#pg">
+                章节管理
+            </a>
+        </div>
+        <div id="page" class="collapse {{if condition='$Request.controller=="Pages"'}}in{{/if}}">
+            <ul class="list-group" style="margin: 0;">
+                <li class="list-group-item"><a href="{{:url('admin/pages/editList')}}">编辑章节</a></li>
+                <li class="list-group-item"><a href="{{:url('admin/pages/addList')}}">新增章节</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <a href="#admin" data-toggle="collapse" data-parent="#pg">
+                账户设置
+            </a>
+        </div>
+        <div id="admin" class="collapse {{if condition='in_array($Request.action,["editname","editpass"])'}}in{{/if}}">
+            <ul class="list-group" style="margin: 0;">
+                <li class="list-group-item"><a href="{{:url('admin/user/editName')}}">修改用户名</a></li>
+                <li class="list-group-item"><a href="{{:url('admin/user/editPass')}}">修改密码</a></li>
+            </ul>
+        </div>
+    </div>
+</div>

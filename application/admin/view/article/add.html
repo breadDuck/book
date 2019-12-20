@@ -1,0 +1,128 @@
+{{extend name="public/base"}}
+
+{{block name="content"}}
+<h2>发表新书</h2>
+
+<form action="{{:url('admin/article/doAdd')}}" method="post" class="form-horizontal" enctype="multipart/form-data">
+    <div class="form-group">
+        <div class="col-sm-1">
+            <label class="control-label">书名</label>
+        </div>
+        <div class="col-sm-6">
+            <input type="text" name="title" value="" class="form-control">
+        </div>
+        <div class="col-sm-4">
+            <span class="help-block">书名不能为空</span>
+        </div>
+    </div>
+    <div class="form-group">
+        <img src="__STATIC__/image/default.gif" class="img-responsive img-thumbnail col-sm-offset-2" 
+        id="uploadImg" style="height: 150px;width: 200px;">
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-1">
+            <label class="control-label">图片</label>
+        </div>
+        <div class="col-sm-6">
+            <input type="file" name="pic" class="form-control" id="upload">
+            <input type="text" name="pic" class="form-control" style="display: none;" id="url">
+        </div>
+        <div class="col-sm-4">
+            图片上传方式：
+            <select name="pic_type" id="select">
+                <option value="upload" selected>上传图片文件</option>
+                <option value="url">输入图片链接</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-1">
+            <label class="control-label">简介</label>
+        </div>
+        <div class="col-sm-6">
+            <textarea name="intro" rows="10" class="form-control"></textarea>
+        </div>
+        <div class="col-sm-4">
+            <span class="help-block">请输入适量的书籍介绍</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-1">
+            <label class="control-label">密钥</label>
+        </div>
+        <div class="col-sm-6">
+            <input type="text" name="book_key" class="form-control">
+        </div>
+        <div class="col-sm-4">
+            <span class="help-block">请随机写一串数字,不超过40位</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-1">
+            <label class="control-label">价格</label>
+        </div>
+        <div class="col-sm-6">
+            <input type="number" name="money" class="form-control">
+        </div>
+        <div class="col-sm-4">
+            <span class="help-block">定价须在1-100金币范围</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-1">
+            <label class="control-label">书籍分类</label>
+        </div>
+        <div class="col-sm-6">
+            <select name="category_id">
+                {{volist name="categoryList" id="vo"}}
+                <option value="{{$vo->id}}">{{$vo->title}}</option>
+                {{/volist}}
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-sm-10 col-sm-offset-1">
+            <input type="submit" value="发表" class="btn btn-primary">
+            <input type="reset" value="取消" class="btn btn-default">
+        </div>
+    </div>
+</form>
+{{/block}}
+
+{{block name="js"}}
+<script>
+    if ($('#select').val() == 'url') {
+        $('#url').css('display', 'block');
+        $('#upload').css('display', 'none');
+    }
+    $('#select').change(function () {
+        if ($('#select').val() == 'url') {
+            $('#url').css('display', 'block');
+            $('#upload').css('display', 'none');
+        } else {
+            $('#url').css('display', 'none');
+            $('#upload').css('display', 'block');
+        }
+    });
+
+    let img = $('#uploadImg')[0];
+    $('#upload')[0].onchange = function () {
+        // console.log(this.files);
+        let reader = new FileReader();
+        reader.readAsDataURL(this.files[0]);
+        reader.onload = () => {
+            // console.log(reader.result);
+            img.src = reader.result; //把上传的图片显示成预览图
+        }
+    };
+    $('#url')[0].onblur=function(){
+        img.src = this.value;
+    }
+</script>
+{{/block}}

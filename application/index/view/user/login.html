@@ -1,0 +1,38 @@
+{{extend name="public/base"}}
+{{block name="title"}}
+用户登录
+{{/block}}
+{{block name="content"}}
+<form action="{{:url('index/user/doLogin')}}" method="POST" class="form-horizontal"
+            style="border:1px solid #aaa; border-radius: 10px; padding: 10px;">
+            <h1 class="text-center text-info" style="font-style: italic; margin-top: 0;">登录</h1>
+            <div class="form-group">
+                <div class="col-sm-1"><label class="control-label">用户名</label></div>
+                <div class="col-sm-5"><input type="text" class="form-control" name="name"></div>
+                <div class="col-sm-5"><span class="help-block">用户名不能为空</span></div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-1"><label class="control-label">密码</label></div>
+                <div class="col-sm-5"><input type="password" class="form-control" name="password"></div>
+                <div class="col-sm-5"><span class="help-block">必须填写</span></div>
+            </div>
+            <div class="form-group" style="padding-top: 10px;">
+                    <div class="col-sm-1"><label class="control-label">验证码</label></div>
+                    <div class="col-sm-5 col-xs-6"><input type="text" class="form-control" name="captcha"></div>
+                    <div class="col-sm-5 col-xs-6" style="margin-top: -10px;"><img src="{{:captcha_src()}}" onclick="this.src='{{:captcha_src()}}'" class="img-thumbnail"></div>
+                </div>
+            <div class="form-group">
+                <div class="checkbox col-sm-offset-2 col-sm-10">
+                    <label>
+                        <input type="checkbox">记住我
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <input type="submit" value="登录" class="btn btn-primary btn-lg">
+                    <input type="reset" value="取消" class="btn btn-default btn-lg">
+                </div>
+            </div>
+</form>
+{{/block}}

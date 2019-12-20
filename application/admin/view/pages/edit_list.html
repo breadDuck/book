@@ -1,0 +1,22 @@
+{{extend name="public/base"}}
+
+{{block name="content"}}
+
+<div class="panel-group">
+    {{volist name="list" id="vo" empty="<h3 class='text-center'>您没有上传的书目</h3>"}}
+    <div class="panel panel-default">
+        <div data-parent="#shoufengqing" data-toggle="collapse" data-target="#{{$key}}" class="panel-heading">
+            <h3 class="panel-title">{{$vo.title}}</h3>
+        </div>
+        <div id="{{$key}}" class="collapse">
+            <div class="panel-body">
+                {{volist name="vo.pages" id="vv"}}
+                    <a href="{{:url('admin/pages/edit',['id'=>$vv.id])}}" style="padding: 5px;display: inline;">{{$vv.title}}</a>
+                {{/volist}}
+            </div>
+        </div>
+    </div>
+    {{/volist}}
+</div>
+
+{{/block}}

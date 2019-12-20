@@ -1,0 +1,15 @@
+{{extend name="public/base"}}
+
+{{block name="content"}}
+
+<h2>{{$book.title}}</h2>
+<div>
+    {{volist name="pages" id="vo" empty="<h3>暂无数据</h3>"}}
+    <a href="{{:url('index/pages/read',['id'=>$vo.id,'book_id'=>$book.id])}}">{{$vo.title}}</a>&nbsp;
+    {{/volist}}
+</div>
+
+<div class="text-center">
+    {{$pages->render()}}
+</div>
+{{/block}}
